@@ -50,7 +50,6 @@ import { MediaModule } from '@/modules/media/media.module';
         autoLoadModels: true,
         synchronize: false,
         logging: configService.get<boolean>('database.logging') ? console.log : false,
-        models: [User, Owner],
       }),
     }),
     RedisModule,
