@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "Node16",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -13,8 +13,21 @@
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,
-    "moduleResolution": "node",
-    "types": ["node", "jest"]
+    "moduleResolution": "node16",
+    "types": [
+      "node",
+      "jest"
+    ],
+    "strictPropertyInitialization": false,
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
-  "include": ["src/**/*", "test/**/*", "sequelize.config.js"]
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "sequelize.config.js"
+  ]
 }

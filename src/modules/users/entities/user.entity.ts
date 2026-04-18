@@ -2,42 +2,52 @@ import {
   BeforeCreate,
   Column,
   DataType,
-  Default,
-  HasMany,
   Model,
-  PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import { v4 as uuidv4 } from 'uuid';
-import * as bcrypt from 'bcrypt';
-import { Product } from '../../products/entities/product.entity';
+  CreatedAt,
+  UpdatedAt,
+  DeletedAt,
+  HasOne,
+} from "sequelize-typescript";
+import { v4 as uuidv4 } from "uuid";
+import * as bcrypt from "bcrypt";
+import { Owner } from "@/modules/owner/entities/owner.entity";
 
-@Table({
-  tableName: 'users',
-  timestamps: true,
-  paranoid: true,
-})
-export class User extends Model<User> {
-  @PrimaryKey
-  @Default(DataType.UUIDV4)
-  @Column({ type: DataType.UUID })
+@Table({ tableName: "users", underscored: true, paranoid: true })
+export class User extends Model {
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+  })
   id: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  name: string;
-
-  @Column({ type: DataType.STRING, allowNull: false, unique: true })
+  @Column({ unique: true, allowNull: false })
   email: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ allowNull: false })
   password: string;
 
-  @Default('user')
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({
+    type: DataType.ENUM("SUPERADMIN", "OWNER", "STAFF"),
+    defaultValue: "OWNER",
+  })
   role: string;
 
-  @HasMany(() => Product)
-  products: Product[];
+  @Column({ defaultValue: true })
+  isActive: boolean;
+
+  @HasOne(() => Owner)
+  ownerProfile: Owner;
+
+  @CreatedAt
+  createdAt: Date;
+
+  @UpdatedAt
+  updatedAt: Date;
+
+  @DeletedAt
+  deletedAt: Date;
 
   @BeforeCreate
   static async assignIdAndHash(instance: User): Promise<void> {

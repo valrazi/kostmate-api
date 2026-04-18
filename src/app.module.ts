@@ -7,13 +7,18 @@ import databaseConfig from './config/database.config';
 import redisConfig from './config/redis.config';
 import jwtConfig from './config/jwt.config';
 import { User } from './modules/users/entities/user.entity';
-import { Product } from './modules/products/entities/product.entity';
+import { Owner } from './modules/owner/entities/owner.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
-import { ProductsModule } from './modules/products/products.module';
 import { RedisModule } from './redis/redis.module';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { RequestLoggingMiddleware } from './redis/middlewares/request-logging.middleware';
+import { OwnerModule } from './modules/owner/owner.module';
+import { BranchModule } from '@/modules/branch/branch.module';
+import { RoomModule } from '@/modules/room/room.module';
+import { CustomerModule } from '@/modules/customer/customer.module';
+import { RentalModule } from '@/modules/rental/rental.module';
+import { MediaModule } from '@/modules/media/media.module';
 
 @Module({
   imports: [
@@ -45,13 +50,18 @@ import { RequestLoggingMiddleware } from './redis/middlewares/request-logging.mi
         autoLoadModels: true,
         synchronize: false,
         logging: configService.get<boolean>('database.logging') ? console.log : false,
-        models: [User, Product],
+        models: [User, Owner],
       }),
     }),
     RedisModule,
     AuthModule,
     UsersModule,
-    ProductsModule,
+    OwnerModule,
+    BranchModule,
+    RoomModule,
+    CustomerModule,
+    RentalModule,
+    MediaModule,
   ],
   providers: [
     {
