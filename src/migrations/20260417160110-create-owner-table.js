@@ -9,6 +9,8 @@ module.exports = {
     name: { type: Sequelize.STRING, allowNull: false },
     phone_number: { type: Sequelize.STRING },
     subscription_active_until: { type: Sequelize.DATE },
+    branch_quota: { type: Sequelize.INTEGER, defaultValue: 2 },
+    room_quota: { type: Sequelize.INTEGER, defaultValue: 30 },
     created_at: { type: Sequelize.DATE, allowNull: false },
     updated_at: { type: Sequelize.DATE, allowNull: false },
     deleted_at: { type: Sequelize.DATE, allowNull: true },

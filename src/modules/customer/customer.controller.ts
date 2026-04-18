@@ -18,11 +18,12 @@ export class CustomerController {
   @Get()
   @ApiOperation({ summary: 'Get all customers by branch' })
   @ApiQuery({ name: 'branch_id', required: true })
-  findAll(@Query('branch_id') branchId: string) {
+  @ApiQuery({ name: 'search', required: false })
+  findAll(@Query('branch_id') branchId: string, @Query('search') search?: string) {
     if (!branchId) {
       throw new BadRequestException('branch_id is required');
     }
-    return this.customerService.findAll(branchId);
+    return this.customerService.findAll(branchId, search);
   }
 
   @Get(':id')

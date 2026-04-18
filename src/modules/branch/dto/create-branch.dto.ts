@@ -20,4 +20,7 @@ export class CreateBranchDto {
   @IsString()
   @IsOptional()
   whatsappNumber?: string;
+
+  @IsOptional()
+  roomQuota?: number;
 }

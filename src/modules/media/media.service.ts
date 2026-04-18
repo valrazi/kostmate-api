@@ -21,6 +21,7 @@ export class MediaService {
     const secretAccessKey = this.configService.get<string>('S3_SECRET_KEY') || '';
 
     this.s3Client = new S3Client({
+      forcePathStyle: true,
       region,
       endpoint,
       credentials: {

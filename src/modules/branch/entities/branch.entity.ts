@@ -30,6 +30,9 @@ export class Branch extends Model {
   @Column
   whatsappNumber: string;
 
+  @Column({ type: DataType.INTEGER, defaultValue: 0 })
+  roomQuota: number;
+
   @HasMany(() => Room)
   rooms: Room[];
 

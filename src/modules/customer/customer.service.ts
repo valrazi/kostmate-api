@@ -4,6 +4,7 @@ import { Customer } from './entities/customer.entity';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { BranchService } from '../branch/branch.service';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class CustomerService {
@@ -11,16 +12,24 @@ export class CustomerService {
     @InjectModel(Customer)
     private readonly customerModel: typeof Customer,
     private readonly branchService: BranchService,
-  ) {}
+  ) { }
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
     await this.branchService.findOne(createCustomerDto.branchId);
     return this.customerModel.create({ ...createCustomerDto });
   }
 
-  async findAll(branchId: string): Promise<Customer[]> {
+  async findAll(branchId: string, search?: string): Promise<Customer[]> {
+    const whereClause: any = { branchId };
+
+    if (search) {
+      whereClause.name = {
+        [Op.like]: `%${search}%`,
+      };
+    }
+
     return this.customerModel.findAll({
-      where: { branchId },
+      where: whereClause,
       include: { all: true },
     });
   }
@@ -35,11 +44,11 @@ export class CustomerService {
 
   async update(id: string, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
     const customer = await this.findOne(id);
-    
+
     if (updateCustomerDto.branchId) {
       await this.branchService.findOne(updateCustomerDto.branchId);
     }
-    
+
     return customer.update(updateCustomerDto);
   }
 

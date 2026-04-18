@@ -13,6 +13,7 @@
     "migration:generate": "sequelize-cli migration:generate --name",
     "migration:run": "sequelize-cli db:migrate",
     "migration:undo": "sequelize-cli db:migrate:undo",
+    "migration:undo:all": "sequelize-cli db:migrate:undo:all",
     "seed:run": "sequelize-cli db:seed:all"
   },
   "dependencies": {

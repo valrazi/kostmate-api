@@ -23,6 +23,12 @@ export class Owner extends Model {
   @Column(DataType.DATE)
   subscriptionActiveUntil: Date;
 
+  @Column({ type: DataType.INTEGER, defaultValue: 2 })
+  branchQuota: number;
+
+  @Column({ type: DataType.INTEGER, defaultValue: 30 })
+  roomQuota: number;
+
   @HasMany(() => Branch)
   branches: Branch[];
 
