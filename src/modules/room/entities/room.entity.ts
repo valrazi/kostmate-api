@@ -1,5 +1,7 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo, CreatedAt, UpdatedAt, DeletedAt } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany, CreatedAt, UpdatedAt, DeletedAt } from 'sequelize-typescript';
 import { Branch } from '@/modules/branch/entities/branch.entity';
+import { Rental } from '@/modules/rental/entities/rental.entity';
+import { Payment } from '@/modules/payment/entities/payment.entity';
 
 @Table({ tableName: 'rooms', underscored: true, paranoid: true })
 export class Room extends Model {
@@ -21,6 +23,15 @@ export class Room extends Model {
     defaultValue: 'available'
   })
   status: string;
+
+  @Column({
+    type: DataType.ENUM('male', 'female', 'mixed'),
+    defaultValue: 'mixed'
+  })
+  gender: string;
+
+  @HasMany(() => Rental)
+  rentals: Rental[];
 
   @CreatedAt
   createdAt: Date;

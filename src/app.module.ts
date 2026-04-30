@@ -19,9 +19,12 @@ import { RoomModule } from '@/modules/room/room.module';
 import { CustomerModule } from '@/modules/customer/customer.module';
 import { RentalModule } from '@/modules/rental/rental.module';
 import { MediaModule } from '@/modules/media/media.module';
+import { PaymentModule } from '@/modules/payment/payment.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, redisConfig, jwtConfig],
@@ -61,6 +64,7 @@ import { MediaModule } from '@/modules/media/media.module';
     CustomerModule,
     RentalModule,
     MediaModule,
+    PaymentModule,
   ],
   providers: [
     {

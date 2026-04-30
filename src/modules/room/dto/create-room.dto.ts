@@ -12,4 +12,8 @@ export class CreateRoomDto {
   @IsEnum(['available', 'filled', 'maintenance'])
   @IsOptional()
   status?: 'available' | 'filled' | 'maintenance';
+
+  @IsEnum(['male', 'female', 'mixed'])
+  @IsOptional()
+  gender?: 'male' | 'female' | 'mixed';
 }

@@ -1,7 +1,8 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo, CreatedAt, UpdatedAt, DeletedAt } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany, CreatedAt, UpdatedAt, DeletedAt } from 'sequelize-typescript';
 import { Room } from '@/modules/room/entities/room.entity';
 import { Customer } from '@/modules/customer/entities/customer.entity';
 import { Branch } from '@/modules/branch/entities/branch.entity';
+import { Payment } from '@/modules/payment/entities/payment.entity';
 
 @Table({ tableName: 'rentals', underscored: true, paranoid: true })
 export class Rental extends Model {
