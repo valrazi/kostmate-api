@@ -21,7 +21,7 @@ import { RentalModule } from '@/modules/rental/rental.module';
 import { MediaModule } from '@/modules/media/media.module';
 import { PaymentModule } from '@/modules/payment/payment.module';
 import { ScheduleModule } from '@nestjs/schedule';
-
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -65,6 +65,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     RentalModule,
     MediaModule,
     PaymentModule,
+    DashboardModule,
   ],
   providers: [
     {
