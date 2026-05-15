@@ -17,7 +17,7 @@ export class BranchController {
 
   @Get()
   @ApiOperation({ summary: 'Get all branches' })
-  @ApiQuery({ name: 'owner_id', required: false })
+  @ApiQuery({ name: 'owner_id', required: true })
   findAll(@Query('owner_id') ownerId?: string) {
     return this.branchService.findAll(ownerId);
   }

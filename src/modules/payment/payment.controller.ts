@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { PaymentCronService } from './payment-cron.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 
 @ApiTags('payments')
@@ -14,7 +14,7 @@ export class PaymentController {
   constructor(
     private readonly paymentService: PaymentService,
     private readonly paymentCronService: PaymentCronService
-  ) {}
+  ) { }
 
   @Post('/trigger-cron')
   @ApiOperation({ summary: 'Manually trigger daily payment generation' })
@@ -31,8 +31,9 @@ export class PaymentController {
 
   @Get()
   @ApiOperation({ summary: 'Get all payments' })
-  findAll() {
-    return this.paymentService.findAll();
+  @ApiQuery({ name: 'branch_id', required: true })
+  findAll(@Query('branch_id') branchId?: string) {
+    return this.paymentService.findAll(branchId);
   }
 
   @Get(':id')

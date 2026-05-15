@@ -22,6 +22,7 @@ import { MediaModule } from '@/modules/media/media.module';
 import { PaymentModule } from '@/modules/payment/payment.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { WhatsappQueueModule } from './modules/whatsapp-queue/whatsapp-queue.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -66,6 +67,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     MediaModule,
     PaymentModule,
     DashboardModule,
+    WhatsappQueueModule,
   ],
   providers: [
     {

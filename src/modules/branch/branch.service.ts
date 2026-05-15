@@ -10,7 +10,7 @@ export class BranchService {
   constructor(
     @InjectModel(Branch)
     private readonly branchModel: typeof Branch,
-  ) {}
+  ) { }
 
   async create(createBranchDto: CreateBranchDto): Promise<Branch> {
     if (createBranchDto.ownerId) {
@@ -36,8 +36,16 @@ export class BranchService {
   }
 
   async findAll(ownerId?: string): Promise<Branch[]> {
-    const where = ownerId ? { ownerId } : {};
-    return this.branchModel.findAll({ where, include: { all: true } });
+    if (ownerId) {
+      return this.branchModel.findAll({
+        include: { all: true },
+        where: {
+          ownerId,
+        },
+        order: [['createdAt', 'DESC']],
+      });
+    }
+    return [];
   }
 
   async findOne(id: string): Promise<Branch> {
@@ -50,7 +58,7 @@ export class BranchService {
 
   async update(id: string, updateBranchDto: UpdateBranchDto): Promise<Branch> {
     const branch = await this.findOne(id);
-    
+
     if (updateBranchDto.roomQuota !== undefined) {
       const owner = await Owner.findByPk(branch.ownerId);
       if (owner) {

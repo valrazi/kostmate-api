@@ -15,7 +15,7 @@ export class DashboardService {
     @InjectModel(Customer) private customerModel: typeof Customer,
     @InjectModel(Rental) private rentalModel: typeof Rental,
     @InjectModel(Payment) private paymentModel: typeof Payment,
-  ) {}
+  ) { }
 
   async getStats(ownerId?: string) {
     const branchWhere: any = {};
@@ -27,8 +27,9 @@ export class DashboardService {
       where: branchWhere,
       attributes: ['id', 'name', 'roomQuota'],
     });
-    
+
     const branchIds = branches.map(b => b.id);
+    console.log({ branchIds, branches, ownerId })
 
     if (ownerId && branchIds.length === 0) {
       return {
@@ -49,7 +50,7 @@ export class DashboardService {
     });
 
     const totalRooms = branches.reduce((acc, curr) => acc + (curr.roomQuota || 0), 0);
-    
+
     const occupiedRooms = await this.rentalModel.count({
       where: {
         status: 'active',
@@ -63,7 +64,7 @@ export class DashboardService {
         ...(branchIds.length > 0 ? { branchId: { [Op.in]: branchIds } } : {})
       }
     });
-    
+
     const totalRevenue = totalRevenueSum || 0;
 
     const branchOccupancy = [];
@@ -81,7 +82,7 @@ export class DashboardService {
 
     const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
     const paymentTrend = [];
-    
+
     const now = new Date();
     for (let i = 5; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);

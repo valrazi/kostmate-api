@@ -21,4 +21,8 @@ export class RedisService {
   async del(key: string): Promise<void> {
     await this.redisClient.del(key);
   }
+
+  async publish(channel: string, message: string): Promise<number> {
+    return this.redisClient.publish(channel, message);
+  }
 }

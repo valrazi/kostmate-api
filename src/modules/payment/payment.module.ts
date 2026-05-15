@@ -6,11 +6,13 @@ import { Payment } from './entities/payment.entity';
 import { PaymentCronService } from './payment-cron.service';
 import { Rental } from '@/modules/rental/entities/rental.entity';
 import { AuthModule } from '@/modules/auth/auth.module';
+import { WhatsappQueueModule } from '@/modules/whatsapp-queue/whatsapp-queue.module';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([Payment, Rental]),
     AuthModule,
+    WhatsappQueueModule,
   ],
   controllers: [PaymentController],
   providers: [PaymentService, PaymentCronService],
