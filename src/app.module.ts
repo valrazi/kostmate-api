@@ -23,6 +23,8 @@ import { PaymentModule } from '@/modules/payment/payment.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { WhatsappQueueModule } from './modules/whatsapp-queue/whatsapp-queue.module';
+import { ReportsModule } from './modules/reports/reports.module';
+
 @Module({
   imports: [
     ScheduleModule.forRoot(),
@@ -68,6 +70,7 @@ import { WhatsappQueueModule } from './modules/whatsapp-queue/whatsapp-queue.mod
     PaymentModule,
     DashboardModule,
     WhatsappQueueModule,
+    ReportsModule,
   ],
   providers: [
     {

@@ -6,6 +6,7 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { BranchService } from '../branch/branch.service';
 import { Rental } from '../rental/entities/rental.entity';
 import { Customer } from '../customer/entities/customer.entity';
+import { Op, Sequelize } from 'sequelize';
 
 @Injectable()
 export class RoomService {
@@ -17,7 +18,40 @@ export class RoomService {
 
   async create(createRoomDto: CreateRoomDto): Promise<Room> {
     // Validate that the branch exists
-    await this.branchService.findOne(createRoomDto.branchId);
+    const branch = await this.branchService.findOne(createRoomDto.branchId);
+    
+    // Check if branch room quota is reached
+    const roomCount = await this.roomModel.count({
+      where: { branchId: createRoomDto.branchId },
+    });
+
+    if (roomCount >= (branch.roomQuota || 0)) {
+      throw new BadRequestException(
+        `Gagal menambah kamar: Cabang ${branch.name} sudah mencapai batas kuota maksimal (${branch.roomQuota} kamar).`
+      );
+    }
+
+    // Check if room gender matches branch gender preference
+    if (branch.genderPreference !== 'mixed' && createRoomDto.gender !== branch.genderPreference) {
+      const branchGenderName = branch.genderPreference === 'male' ? 'Laki-laki' : 'Perempuan';
+      throw new BadRequestException(
+        `Gagal: Cabang ini dikhususkan untuk ${branchGenderName}, sehingga gender kamar harus sesuai.`
+      );
+    }
+
+    // Check for duplicate room number in the same branch
+    const existingRoom = await this.roomModel.findOne({
+      where: {
+        branchId: createRoomDto.branchId,
+        roomNumber: createRoomDto.roomNumber,
+      },
+    });
+
+    if (existingRoom) {
+      throw new BadRequestException(
+        `Kamar dengan nomor ${createRoomDto.roomNumber} sudah terdaftar di cabang ini.`
+      );
+    }
     
     return this.roomModel.create({ ...createRoomDto });
   }
@@ -37,7 +71,10 @@ export class RoomService {
           ]
         }
       ],
-      order: [['roomNumber', 'ASC']]
+      order: [
+        [Sequelize.literal('CAST(room_number AS SIGNED)'), 'ASC'],
+        ['roomNumber', 'ASC']
+      ]
     });
   }
 
@@ -56,7 +93,51 @@ export class RoomService {
       throw new BadRequestException('Kamar sedang ditempati, tidak dapat diubah.');
     }
 
-    if (updateRoomDto.branchId) {
+    if (updateRoomDto.gender || updateRoomDto.branchId) {
+      const targetBranchId = updateRoomDto.branchId || room.branchId;
+      const targetGender = updateRoomDto.gender || room.gender;
+      
+      const targetBranch = await this.branchService.findOne(targetBranchId);
+      if (targetBranch.genderPreference !== 'mixed' && targetGender !== targetBranch.genderPreference) {
+        const branchGenderName = targetBranch.genderPreference === 'male' ? 'Laki-laki' : 'Perempuan';
+        throw new BadRequestException(
+          `Gagal: Cabang ini dikhususkan untuk ${branchGenderName}, sehingga gender kamar harus sesuai.`
+        );
+      }
+    }
+
+    if (updateRoomDto.roomNumber || updateRoomDto.branchId) {
+      const targetBranchId = updateRoomDto.branchId || room.branchId;
+      const targetRoomNumber = updateRoomDto.roomNumber || room.roomNumber;
+
+      const duplicateRoom = await this.roomModel.findOne({
+        where: {
+          id: { [Op.ne]: id },
+          branchId: targetBranchId,
+          roomNumber: targetRoomNumber,
+        },
+      });
+
+      if (duplicateRoom) {
+        throw new BadRequestException(
+          `Kamar dengan nomor ${targetRoomNumber} sudah terdaftar di cabang ini.`
+        );
+      }
+    }
+
+    if (updateRoomDto.branchId && updateRoomDto.branchId !== room.branchId) {
+      const targetBranch = await this.branchService.findOne(updateRoomDto.branchId);
+      
+      const targetRoomCount = await this.roomModel.count({
+        where: { branchId: updateRoomDto.branchId },
+      });
+
+      if (targetRoomCount >= (targetBranch.roomQuota || 0)) {
+        throw new BadRequestException(
+          `Gagal memindahkan kamar: Cabang tujuan (${targetBranch.name}) sudah mencapai batas kuota maksimal (${targetBranch.roomQuota} kamar).`
+        );
+      }
+    } else if (updateRoomDto.branchId) {
       await this.branchService.findOne(updateRoomDto.branchId);
     }
     

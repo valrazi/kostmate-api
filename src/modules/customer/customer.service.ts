@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Customer } from './entities/customer.entity';
 import { CreateCustomerDto } from './dto/create-customer.dto';
@@ -15,7 +15,13 @@ export class CustomerService {
   ) { }
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    await this.branchService.findOne(createCustomerDto.branchId);
+    const branch = await this.branchService.findOne(createCustomerDto.branchId);
+    
+    if (branch.genderPreference !== 'mixed' && createCustomerDto.gender !== branch.genderPreference) {
+      const branchGenderName = branch.genderPreference === 'male' ? 'Laki-laki' : 'Perempuan';
+      throw new BadRequestException(`Gagal: Cabang ini khusus untuk ${branchGenderName}.`);
+    }
+    
     return this.customerModel.create({ ...createCustomerDto });
   }
 
@@ -45,7 +51,16 @@ export class CustomerService {
   async update(id: string, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
     const customer = await this.findOne(id);
 
-    if (updateCustomerDto.branchId) {
+    if (updateCustomerDto.gender || updateCustomerDto.branchId) {
+      const targetBranchId = updateCustomerDto.branchId || customer.branchId;
+      const targetGender = updateCustomerDto.gender || customer.gender;
+      
+      const branch = await this.branchService.findOne(targetBranchId);
+      if (branch.genderPreference !== 'mixed' && targetGender !== branch.genderPreference) {
+        const branchGenderName = branch.genderPreference === 'male' ? 'Laki-laki' : 'Perempuan';
+        throw new BadRequestException(`Gagal: Cabang ini khusus untuk ${branchGenderName}.`);
+      }
+    } else if (updateCustomerDto.branchId) {
       await this.branchService.findOne(updateCustomerDto.branchId);
     }
 
