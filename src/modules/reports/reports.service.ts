@@ -4,6 +4,7 @@ import { Customer } from '@/modules/customer/entities/customer.entity';
 import { Rental } from '@/modules/rental/entities/rental.entity';
 import { Payment } from '@/modules/payment/entities/payment.entity';
 import { Room } from '@/modules/room/entities/room.entity';
+import { Maintenance } from '@/modules/maintenance/entities/maintenance.entity';
 import dayjs from 'dayjs';
 import { Sequelize } from 'sequelize';
 
@@ -14,6 +15,7 @@ export class ReportsService {
     @InjectModel(Rental) private readonly rentalModel: typeof Rental,
     @InjectModel(Payment) private readonly paymentModel: typeof Payment,
     @InjectModel(Room) private readonly roomModel: typeof Room,
+    @InjectModel(Maintenance) private readonly maintenanceModel: typeof Maintenance,
   ) {}
 
   async getReports(branchId: string, monthStr?: string) {
@@ -189,6 +191,16 @@ export class ReportsService {
 
     const totalBiaya = payments.reduce((sum, p) => sum + Number(p.amount), 0);
 
+    // Fetch maintenance records to calculate expenses
+    const maintenanceRecords = await this.maintenanceModel.findAll({
+      where: { branchId },
+    });
+
+    const totalMaintenance = maintenanceRecords.reduce(
+      (sum, mRec) => sum + Number(mRec.electricBills || 0) + Number(mRec.operationalBills || 0),
+      0,
+    );
+
     // Income chart data (6 months)
     const incomeChart = [];
     for (const m of monthsList) {
@@ -206,9 +218,20 @@ export class ReportsService {
           return sum;
         }, 0);
 
+      const monthlyMaintenance = maintenanceRecords
+        .reduce((sum, mRec) => {
+          const mDate = dayjs(mRec.date);
+          if ((mDate.isAfter(startOfMonth) || mDate.isSame(startOfMonth, 'day')) && 
+              (mDate.isBefore(endOfMonth) || mDate.isSame(endOfMonth, 'day'))) {
+            return sum + Number(mRec.electricBills || 0) + Number(mRec.operationalBills || 0);
+          }
+          return sum;
+        }, 0);
+
       incomeChart.push({
         name: m.format('MMM'),
         income: monthlyIncome,
+        expense: monthlyMaintenance,
       });
     }
 
@@ -281,6 +304,7 @@ export class ReportsService {
         totalRevenue,
         totalBiaya,
         totalPending,
+        totalMaintenance,
         list: incomeList,
         chart: incomeChart,
       },

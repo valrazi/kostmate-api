@@ -24,6 +24,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { WhatsappQueueModule } from './modules/whatsapp-queue/whatsapp-queue.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { MaintenanceModule } from './modules/maintenance/maintenance.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { ReportsModule } from './modules/reports/reports.module';
     DashboardModule,
     WhatsappQueueModule,
     ReportsModule,
+    MaintenanceModule,
   ],
   providers: [
     {

@@ -23,4 +23,20 @@ export class CreateBranchDto {
 
   @IsOptional()
   roomQuota?: number;
+
+  @IsString()
+  @IsOptional()
+  messageNotification?: string;
+
+  @IsString()
+  @IsOptional()
+  bankName?: string;
+
+  @IsString()
+  @IsOptional()
+  bankNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  bankBrand?: string;
 }
